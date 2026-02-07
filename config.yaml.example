@@ -1,160 +1,26 @@
-# ====================================
 # ChatGPT 注册机 - 应用配置
-# ====================================
-#
-# 本文件包含应用的详细业务配置。
-# 修改后需要重启服务生效: cd /opt/chatgpt-register && sudo docker compose restart
-#
-# 详细配置说明: https://github.com/DouDOU-start/chatgpt-register-deploy/blob/main/docs/CONFIGURATION.md
+# 修改后执行: cgr restart
 
-# ====================================
 # Docker 主机配置
-# ====================================
-#
-# 用于管理远程浏览器容器，支持配置多个 Docker 主机实现分布式部署
-#
-# 本地 Docker:
-#   - url: unix:///var/run/docker.sock（Unix Socket，用于本地 Docker）
-#   - 推荐单机部署使用
-#
-# 远程 Docker:
-#   - url: tcp://192.168.1.100:2375（TCP，用于远程 Docker）
-#   - 需要在远程服务器配置 Docker TCP 监听
-#   - 生产环境建议启用 TLS 加密
-#
-# max_containers: 每个主机最多同时运行的浏览器容器数量
-#   - 根据主机性能调整
-#   - 建议: 2-5 个容器/主机
 docker_hosts:
-  # 示例: 本地 Docker 配置
   - name: 本地 Docker
     url: unix:///var/run/docker.sock
     max_containers: 2
 
-  # 示例: 远程 Docker 配置（可选）
-  # - name: 远程 Docker 1
-  #   url: tcp://192.168.1.100:2375
-  #   max_containers: 5
-  #
-  # - name: 远程 Docker 2
-  #   url: tcp://192.168.1.101:2375
-  #   max_containers: 5
-
-# ====================================
-# 浏览器配置
-# ====================================
-
-# 浏览器容器镜像
-# 选项:
-#   - chromedp/headless-shell:latest（推荐，精简版 Chrome）
-#   - chromedp/headless-shell:stable（稳定版）
-#   - browserless/chrome:latest（功能完整版）
+# 浏览器镜像
 browser_image: chromedp/headless-shell:latest
 
-# 浏览器运行方式
-# 选项:
-#   - docker: 容器化浏览器（推荐，生产环境）
-#   - local: 本地浏览器（仅开发测试，需要本地安装 Chrome）
+# 浏览器运行方式（docker=容器化, local=本地）
 browser_backend: docker
 
-# ====================================
-# 数据库备份配置
-# ====================================
-
+# 数据库备份
 backup:
-  # 备份文件存储目录（容器内路径，Docker 环境下无需修改）
-  # 宿主机备份路径: /opt/chatgpt-register/data/backups
   directory: /app/data/backups
-
-  # 自动备份间隔（秒）
-  # 常用值:
-  #   - 86400: 24 小时（默认，推荐）
-  #   - 43200: 12 小时
-  #   - 21600: 6 小时
-  #   - 3600: 1 小时（高频使用）
-  auto_backup_interval: 86400
-
-  # 备份保留天数
-  # 超过该天数的旧备份会被自动清理
-  # 建议: 7-30 天
+  auto_backup_interval: 86400  # 24小时
   keep_days: 7
 
-# ====================================
-# Sub2API 实例配置（可选）
-# ====================================
-#
-# 用于管理 ChatGPT 订阅转 API 服务（Sub2API）
-# 如果不使用该服务，保持为空数组即可
-#
-# 配置说明:
-#   - url: Sub2API 服务地址
-#   - email: 管理员邮箱
-#   - password: 管理员密码
-#
-# 示例:
-# sub2api_instances:
-#   - url: http://192.168.1.200:3000
-#     email: admin@example.com
-#     password: your-secure-password
-#
-#   - url: http://192.168.1.201:3000
-#     email: admin@example.com
-#     password: your-secure-password
-
+# Sub2API 实例（可选）
 sub2api_instances: []
 
-# ====================================
-# Sora2API 实例配置（可选）
-# ====================================
-#
-# 用于管理 Sora 视频生成 API 服务（Sora2API）
-# 如果不使用该服务，保持为空数组即可
-#
-# 配置说明:
-#   - url: Sora2API 服务地址
-#   - email: 管理员邮箱
-#   - password: 管理员密码
-#
-# 示例:
-# sora2api_instances:
-#   - url: http://192.168.1.202:3001
-#     email: admin@example.com
-#     password: your-secure-password
-#
-#   - url: http://192.168.1.203:3001
-#     email: admin@example.com
-#     password: your-secure-password
-
+# Sora2API 实例（可选）
 sora2api_instances: []
-
-# ====================================
-# 配置最佳实践
-# ====================================
-#
-# 1. 单机部署（推荐新手）:
-#    docker_hosts:
-#      - name: 本地 Docker
-#        url: unix:///var/run/docker.sock
-#        max_containers: 2
-#
-# 2. 分布式部署（高级用户）:
-#    docker_hosts:
-#      - name: 本地 Docker
-#        url: unix:///var/run/docker.sock
-#        max_containers: 2
-#      - name: 远程 Docker 1
-#        url: tcp://192.168.1.100:2375
-#        max_containers: 5
-#      - name: 远程 Docker 2
-#        url: tcp://192.168.1.101:2375
-#        max_containers: 5
-#
-# 3. 备份策略:
-#    - 低频使用: auto_backup_interval: 86400 (24小时), keep_days: 7
-#    - 中频使用: auto_backup_interval: 43200 (12小时), keep_days: 14
-#    - 高频使用: auto_backup_interval: 21600 (6小时), keep_days: 30
-#
-# 4. 异地备份（推荐）:
-#    定期将 /opt/chatgpt-register/data/backups 同步到远程服务器或对象存储
-#
-# ====================================
