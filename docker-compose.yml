@@ -1,32 +1,22 @@
 services:
   chatgpt-register:
-    # 使用预构建的 Docker 镜像（不再需要构建源码）
-    image: ${DOCKER_IMAGE:-ghcr.io/doudou-start/chatgpt-register:latest}
+    image: ghcr.io/doudou-start/chatgpt-register:latest
     container_name: chatgpt-register
     env_file:
       - .env
     environment:
-      # 数据目录（容器内路径）
       DATA_DIR: /app/data
-      # 日志目录（容器内路径）
       LOG_DIR: /app/logs
-      # 静态文件目录（前端已内置在镜像中）
       STATIC_DIR: /app/web/dist
-      # 服务端口
       PORT: ${PORT:-8082}
     ports:
       - "${PORT:-8082}:${PORT:-8082}"
     volumes:
-      # 数据持久化（统一在安装目录下）
       - ./data:/app/data
-      # 日志持久化（统一在安装目录下）
       - ./logs:/app/logs
-      # 配置文件（统一在安装目录下）
       - ./config.yaml:/app/config.yaml
-      # Docker socket（用于管理容器）
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
-      # 允许容器访问宿主机
       - "host.docker.internal:host-gateway"
     networks:
       - app-net
