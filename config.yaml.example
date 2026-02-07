@@ -10,17 +10,7 @@ docker_hosts:
 # 浏览器镜像
 browser_image: chromedp/headless-shell:latest
 
-# 浏览器运行方式（docker=容器化, local=本地）
-browser_backend: docker
-
 # 数据库备份
 backup:
-  directory: /app/data/backups
   auto_backup_interval: 86400  # 24小时
   keep_days: 7
-
-# Sub2API 实例（可选）
-sub2api_instances: []
-
-# Sora2API 实例（可选）
-sora2api_instances: []
