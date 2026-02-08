@@ -5,14 +5,13 @@
 ## 一键部署
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/DouDOU-start/chatgpt-register-deploy/main/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/DouDOU-start/chatgpt-register-deploy/master/install.sh | sudo bash
 ```
 
 脚本会交互式引导你完成配置：
 - ✅ 安装目录（默认 `/opt/chatgpt-register`）
 - ✅ 服务端口（默认 `8082`）
 - ✅ API Key（自动生成，请妥善保存）
-- ✅ 验证码平台（可选）
 
 安装完成后，访问 `http://<你的服务器IP>:8082`
 

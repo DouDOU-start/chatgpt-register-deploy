@@ -69,7 +69,7 @@ fi
 if ! need_cmd docker; then
   warn "未检测到 Docker"
   ask "是否自动安装 Docker? (y/n) [y]: "
-  read -r INSTALL_DOCKER
+  read -r INSTALL_DOCKER < /dev/tty
   INSTALL_DOCKER=${INSTALL_DOCKER:-y}
 
   if [[ "$INSTALL_DOCKER" =~ ^[Yy]$ ]]; then
@@ -102,12 +102,12 @@ echo ""
 
 # 1. 安装目录
 ask "请输入安装目录 [/opt/chatgpt-register]: "
-read -r INSTALL_DIR
+read -r INSTALL_DIR < /dev/tty
 INSTALL_DIR=${INSTALL_DIR:-/opt/chatgpt-register}
 
 # 2. 服务端口
 ask "请输入服务端口 [8082]: "
-read -r PORT
+read -r PORT < /dev/tty
 PORT=${PORT:-8082}
 
 # 验证端口范围
@@ -123,22 +123,6 @@ API_KEY=$(generate_api_key)
 info "已生成 API Key: $API_KEY"
 warn "请妥善保存此密钥，用于 Web 界面和 API 访问认证"
 
-# 4. 验证码平台
-echo ""
-ask "是否配置验证码平台? (y/n) [n]: "
-read -r SET_PHONE_API
-SET_PHONE_API=${SET_PHONE_API:-n}
-
-SMS_ACTIVATE_KEY=""
-FIVESIM_KEY=""
-if [[ "$SET_PHONE_API" =~ ^[Yy]$ ]]; then
-  ask "请输入 SMS-Activate API Key (留空跳过): "
-  read -r SMS_ACTIVATE_KEY
-
-  ask "请输入 5SIM API Key (留空跳过): "
-  read -r FIVESIM_KEY
-fi
-
 # 确认配置
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -147,12 +131,10 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 info "安装目录: $INSTALL_DIR"
 info "服务端口: $PORT"
 info "API Key: $API_KEY"
-info "SMS-Activate: $([ -n "$SMS_ACTIVATE_KEY" ] && echo '已设置' || echo '未设置')"
-info "5SIM: $([ -n "$FIVESIM_KEY" ] && echo '已设置' || echo '未设置')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 ask "确认开始安装? (y/n) [y]: "
-read -r CONFIRM
+read -r CONFIRM < /dev/tty
 CONFIRM=${CONFIRM:-y}
 
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
@@ -170,7 +152,7 @@ mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
 # GitHub Raw 文件基础 URL
-REPO_BASE_URL="https://raw.githubusercontent.com/DouDOU-start/chatgpt-register-deploy/main"
+REPO_BASE_URL="https://raw.githubusercontent.com/DouDOU-start/chatgpt-register-deploy/master"
 
 # 下载配置文件
 info "📥 下载配置文件..."
@@ -199,14 +181,6 @@ sed -i.bak "s|^PORT=.*|PORT=${PORT}|" .env
 
 if [[ -n "$API_KEY" ]]; then
   sed -i.bak "s|^API_KEY=.*|API_KEY=${API_KEY}|" .env
-fi
-
-if [[ -n "$SMS_ACTIVATE_KEY" ]]; then
-  sed -i.bak "s|^PHONE_API_KEY_SMS_ACTIVATE=.*|PHONE_API_KEY_SMS_ACTIVATE=${SMS_ACTIVATE_KEY}|" .env
-fi
-
-if [[ -n "$FIVESIM_KEY" ]]; then
-  sed -i.bak "s|^PHONE_API_KEY_5SIM=.*|PHONE_API_KEY_5SIM=${FIVESIM_KEY}|" .env
 fi
 
 # 删除备份文件
