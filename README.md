@@ -2,7 +2,7 @@
 
 > ChatGPT 账号自动注册与管理服务
 
-<video src="promo.mp4" width="100%" autoplay muted loop></video>
+<video src="https://github.com/DouDOU-start/chatgpt-register-deploy/raw/master/promo.mp4" width="100%" autoplay muted loop></video>
 
 ## 一键部署
 
